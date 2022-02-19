@@ -1,0 +1,19 @@
+## Setup Virtual-env
+1) pip install virtualenv
+2) python -m venv <venv>    || virtualenv <venv>
+3) for windows ->cmd-> .\<venv>\Scripts\activate
+    for mac -> source /<venv>/bin/activate
+4.) Add <venv> to git-ignore
+
+## Install fastapi package
+pip install "fastapi[all]"
+
+
+## Generate Requirements.txt (Reqd only for the very first time during repo setup)
+pip3 freeze > requirements.txt
+
+## Install requirements.txt
+pip install -r requirements.txt
+
+## Short script to check into virtual env & install all the requirements
+./convertifile-venv/Scripts/activate && pip install -r requirements.txt
