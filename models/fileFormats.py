@@ -7,9 +7,9 @@ class FileFormats(str, Enum):
     POWER_POINT = 'ppt'
     WORD = 'doc'
     PDF = 'pdf'
-    IMAGE_JPG = 'jpg'
-    IMAGE_PNG = 'png'
-    IMAGE_JPEG = 'jpeg'
+    JPG = 'jpg'
+    PNG = 'png'
+    JPEG = 'jpeg'
 
 
 class Possibilities(str, Enum):
