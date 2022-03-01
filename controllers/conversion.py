@@ -1,11 +1,11 @@
+import os.path
 import uuid
-
 import pytesseract
 from PIL import Image
 from fastapi import UploadFile
 from pdf2image import convert_from_path
-
 from models.fileFormats import FileFormats
+import os
 
 """
 A controller which converts a file to a different format.
@@ -14,13 +14,16 @@ A controller which converts a file to a different format.
 """
 
 
-async def file_format_converter(file: UploadFile, to_format: FileFormats) -> UploadFile:
+async def file_format_converter(file: UploadFile, to_format: FileFormats) -> str:
     # Storing the file in a temporary location
     unique_id = uuid.uuid4()
     if save_file(file, str(unique_id)):
         # file name sent to the transformer = unique_id + file name
-        transform_file(str(unique_id) + str(file.filename), to_format)
-    return file
+        try:
+            await transform_file(str(unique_id) + str(file.filename), to_format)
+            return str(unique_id) + str(file.filename)
+        except:
+            return ""
 
 
 """
@@ -32,33 +35,31 @@ A controller which converts a file to a different format.
 """
 
 
-def transform_file(file_location: str, to_format: FileFormats):
-    converted_location = file_location[:-3]
-    file_location = f"files/{file_location}"
+async def transform_file(filename: str, to_format: FileFormats):
+    filename_without_extension, extension_with_dot = os.path.splitext(filename)
+    from_format = extension_with_dot[1:]
+    file_location = f"files/{filename}"
 
-    ########################################################################################################################
     if to_format == FileFormats.TEXT:
-        if file_location[-3:] == 'jpg':
-            converted_location = f"results/{converted_location + 'txt'}"
+        if [FileFormats.JPG, FileFormats.PNG, FileFormats.JPEG].__contains__(from_format):
+            filename_without_extension = f"results/{filename_without_extension + f'.{to_format}'}"
             pytesseract.pytesseract.tesseract_cmd = f'OCR-Packs/tesseract.exe'
-            useropfile = open(converted_location, 'a')
-            text = str(((pytesseract.image_to_string(Image.open(file_location)))))
+            useropfile = open(filename_without_extension, 'a')
+            text = str((pytesseract.image_to_string(Image.open(file_location))))
             useropfile.write(text)
             useropfile.close()
         pass
-    ########################################################################################################################
 
-    elif to_format == FileFormats.IMAGE_JPG:
-        if file_location[-3:] == 'pdf':
+    elif [FileFormats.JPG, FileFormats.PNG, FileFormats.JPEG].__contains__(to_format):
+        if from_format == 'pdf':
             pages = convert_from_path(file_location, 500, poppler_path=f'extpacks/poppler-0.68.0/bin')
             count = 0
             for page in pages:
-                useropfile = f"results/{converted_location + str(count) + '.jpg'}"
+                useropfile = f"results/{filename_without_extension + str(count) + f'.{to_format}'}"
                 page.save(useropfile, 'JPEG')
                 count += 1
         pass
 
-    ########################################################################################################################
     else:
         return False
     return True
@@ -73,6 +74,9 @@ A controller which converts a file to a different format.
 
 def save_file(file: UploadFile, uid: str):
     file_location = f"files/{uid}{file.filename}"
-    with open(file_location, "wb+") as file_object:
-        file_object.write(file.file.read())
-    return True
+    try:
+        with open(file_location, "wb+") as file_object:
+            file_object.write(file.file.read())
+            return True
+    except:
+        return False
