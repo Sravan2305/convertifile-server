@@ -6,6 +6,7 @@ from fastapi import UploadFile
 from pdf2image import convert_from_path
 from models.fileFormats import FileFormats
 import os
+import shutil
 
 """
 A controller which converts a file to a different format.
@@ -41,16 +42,20 @@ async def transform_file(filename: str, to_format: FileFormats):
     file_location = f"files/{filename}"
 
     if to_format == FileFormats.TEXT:
+        """
+              TEXT CONTROLLER
+        """
         if [FileFormats.JPG, FileFormats.PNG, FileFormats.JPEG].__contains__(from_format):
-            filename_without_extension = f"results/{filename_without_extension + f'.{to_format}'}"
+            saved_file_location = f"results/{filename_without_extension + f'.{to_format}'}"
             pytesseract.pytesseract.tesseract_cmd = f'OCR-Packs/tesseract.exe'
-            useropfile = open(filename_without_extension, 'a')
+            useropfile = open(saved_file_location, 'a')
             text = str((pytesseract.image_to_string(Image.open(file_location))))
             useropfile.write(text)
             useropfile.close()
-        pass
-
     elif [FileFormats.JPG, FileFormats.PNG, FileFormats.JPEG].__contains__(to_format):
+        """
+              IMAGE CONTROLLER
+        """
         if from_format == 'pdf':
             pages = convert_from_path(file_location, 500, poppler_path=f'extpacks/poppler-0.68.0/bin')
             count = 0
@@ -58,8 +63,11 @@ async def transform_file(filename: str, to_format: FileFormats):
                 useropfile = f"results/{filename_without_extension + str(count) + f'.{to_format}'}"
                 page.save(useropfile, 'JPEG')
                 count += 1
-        pass
-
+        elif [FileFormats.JPG, FileFormats.PNG, FileFormats.JPEG].__contains__(from_format):
+            print(filename)
+            file_path = os.path.join("files/", filename)
+            shutil.copy(file_path, os.path.join("results/"))
+            os.rename("results/" + filename, "results/" + filename_without_extension + f'.{to_format}')
     else:
         return False
     return True
