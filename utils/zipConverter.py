@@ -26,7 +26,8 @@ def zip_files(filenames, result_file_name: str):
         return HTTPException(status_code=500, detail="Error writing zip file")
     # Grab ZIP file from in-memory, make response with correct MIME-type
     resp = Response(s.getvalue(), media_type="application/x-zip-compressed", headers={
-        'Content-Disposition': f'attachment;filename={zip_filename}'
+        "Access-Control-Expose-Headers": "Content-Disposition",
+        'Content-Disposition': f'filename={zip_filename}'
     })
 
     return resp
