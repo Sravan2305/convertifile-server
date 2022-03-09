@@ -22,6 +22,7 @@ async def file_format_converter(file: UploadFile, to_format: FileFormats) -> str
         # file name sent to the transformer = unique_id + file name
         try:
             await transform_file(str(unique_id) + str(file.filename), to_format)
+            print("Images file name : ", str(unique_id) + str(file.filename))
             return str(unique_id) + str(file.filename)
         except:
             return ""
@@ -58,11 +59,13 @@ async def transform_file(filename: str, to_format: FileFormats):
         """
         if from_format == 'pdf':
             pages = convert_from_path(file_location, 500, poppler_path=f'extpacks/poppler-0.68.0/bin')
+            print("Extracted pages: ", len(pages))
             count = 0
             for page in pages:
                 useropfile = f"results/{filename_without_extension + str(count) + f'.{to_format}'}"
                 page.save(useropfile, 'JPEG')
                 count += 1
+            print("Converted to images")
         elif [FileFormats.JPG, FileFormats.PNG, FileFormats.JPEG].__contains__(from_format):
             print(filename)
             file_path = os.path.join("files/", filename)

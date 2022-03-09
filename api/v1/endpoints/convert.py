@@ -15,6 +15,7 @@ async def convert(file: UploadFile, to_format: FileFormats, background_tasks: Ba
         return responses.JSONResponse(status_code=200, content={"message": "File already in the required format",
                                                                 "conversionRequired": False})
     stored_file_name = await file_format_converter(file, to_format)
+    print("Stored File Name : ", stored_file_name)
     if stored_file_name == "":
         raise HTTPException(status_code=500, detail="Sorry! Something went wrong")
     os.makedirs("results", exist_ok=True)
