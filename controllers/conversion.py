@@ -20,12 +20,12 @@ async def file_format_converter(file: UploadFile, to_format: FileFormats) -> str
     unique_id = uuid.uuid4()
     if save_file(file, str(unique_id)):
         # file name sent to the transformer = unique_id + file name
-        try:
-            await transform_file(str(unique_id) + str(file.filename), to_format)
-            print("Images file name : ", str(unique_id) + str(file.filename))
-            return str(unique_id) + str(file.filename)
-        except:
-            return ""
+        # try:
+        await transform_file(str(unique_id) + str(file.filename), to_format)
+        print("Images file name : ", str(unique_id) + str(file.filename))
+        return str(unique_id) + str(file.filename)
+        # except:
+        #     return ""
 
 
 """
