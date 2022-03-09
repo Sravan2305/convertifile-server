@@ -25,7 +25,7 @@ archive.zip
 *~
 .*.sw?
 
-files/**
-results/**
+#files/**
+#results/**
 #OCR-Packs/*
 #extpacks/*
