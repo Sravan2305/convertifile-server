@@ -26,7 +26,7 @@ async def convert(file: UploadFile, to_format: FileFormats, background_tasks: Ba
     else:
         response = sendSingleFIle.send_single_file(files[0], to_format)
 
-    # background_tasks.add_task(emptyDirectory.empty_directory)
+    background_tasks.add_task(emptyDirectory.empty_directory)
     return response
     # return {"message": "Convertifile is working on " + file.filename}
 
@@ -37,5 +37,4 @@ async def convert_multiple_files(file: List[UploadFile], to_format: FileFormats,
     if stored_folder_name == "":
         raise HTTPException(status_code=500, detail="Sorry! Something went wrong")
     background_tasks.add_task(emptyDirectory.empty_directory)
-    print(stored_folder_name.split('/')[-1])
     return sendSingleFIle.send_single_file(stored_folder_name.split('/')[-1], to_format)
