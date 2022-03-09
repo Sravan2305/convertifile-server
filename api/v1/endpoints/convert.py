@@ -11,6 +11,9 @@ file_convert_router = APIRouter()
 
 @file_convert_router.post("/convert-single-file")
 async def convert(file: UploadFile, to_format: FileFormats, background_tasks: BackgroundTasks):
+    os.makedirs("results", exist_ok=True)
+    os.makedirs("files", exist_ok=True)
+
     if not checkConversion.is_conversion_required(file.filename, to_format):
         return responses.JSONResponse(status_code=200, content={"message": "File already in the required format",
                                                                 "conversionRequired": False})
@@ -18,7 +21,6 @@ async def convert(file: UploadFile, to_format: FileFormats, background_tasks: Ba
     print("Stored File Name : ", stored_file_name)
     if stored_file_name == "":
         raise HTTPException(status_code=500, detail="Sorry! Something went wrong")
-    os.makedirs("results", exist_ok=True)
     files = [filename for filename in os.listdir("results/") if
              filename.startswith(stored_file_name[:32])]
     if len(files) == 0:
