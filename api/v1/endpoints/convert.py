@@ -17,6 +17,7 @@ async def convert(file: UploadFile, to_format: FileFormats, background_tasks: Ba
     stored_file_name = await file_format_converter(file, to_format)
     if stored_file_name == "":
         raise HTTPException(status_code=500, detail="Sorry! Something went wrong")
+    os.makedirs("results", exist_ok=True)
     files = [filename for filename in os.listdir("results/") if
              filename.startswith(stored_file_name[:32])]
     if len(files) == 0:
